@@ -10,6 +10,8 @@ Bài tập E-learning môn Lập trình thiết bị di động.
 * **Nút %**: lấy phần trăm pin của điện thoại.
 * **Nút nhiệt kế**: lấy nhiệt độ của pin.
 
+![[image-1794888245916.png]]
+
 Sau khi bấm, màn hình hiện con số vừa lấy được và tự đổi màu: **xanh** là bình thường, **vàng** là pin yếu, **đỏ** là pin quá nóng.
 
 ---
@@ -17,6 +19,7 @@ Sau khi bấm, màn hình hiện con số vừa lấy được và tự đổi m
 ## 2. Vấn đề giải quyết
 
 Flutter chỉ lo phần giao diện. Tự nó không đọc được thông tin pin của điện thoại. Người biết thông tin đó là hệ điều hành Android.
+![[PlatformChannels.png]]
 
 Vì vậy ứng dụng chia làm hai phía, và cần một cách để hai phía nói chuyện với nhau:
 
@@ -48,57 +51,20 @@ Cách để hai phía nói chuyện gọi là **Platform Channel**. Trong code, 
 ## 4. Đường đi của dữ liệu khi bấm nút %
 
 Sơ đồ dưới đây cho thấy 8 bước, theo đúng thứ tự. Ví dụ pin đang ở mức $82\%$.
-
-```text
-       FLUTTER (lib/main.dart)                         ANDROID (MainActivity.kt)
-+-----------------------------------+
-| 1. Người dùng bấm nút %           |
-|    ModeButton -> onPressed        |
-+-----------------------------------+
-                  |
-                  v
-+-----------------------------------+
-| 2. Hàm xử lý bấm nút chạy         |
-|    _onPercentPressed()            |
-+-----------------------------------+
-                  |
-                  v
-+-----------------------------------+             +-----------------------------------+
-| 3. Gửi yêu cầu sang Android       |  qua kênh   | 4. Nhận yêu cầu, xem tên là gì    |
-|    invokeMethod('getPercent')     | ----------> |    setMethodCallHandler { ... }   |
-+-----------------------------------+             +-----------------------------------+
-                                                                    |
-                                                                    v
-                                                  +-----------------------------------+
-                                                  | 5. Hỏi hệ điều hành mức pin       |
-                                                  |    getBatteryPercent()            |
-                                                  +-----------------------------------+
-                                                                    |
-                                                                    v
-+-----------------------------------+             +-----------------------------------+
-| 7. Nhận số 82, lưu lại            |  qua kênh   | 6. Gửi kết quả về Flutter         |
-|    setState(() { _percent = 82 }) | <---------- |    result.success(82)             |
-+-----------------------------------+             +-----------------------------------+
-                  |
-                  v
-+-----------------------------------+
-| 8. Chọn màu và vẽ lại màn hình    |
-|    build() + batteryStatusFor()   |
-+-----------------------------------+
-```
+![[Flow.png]]
 
 ### Chi tiết từng bước
 
-| Bước | Ở đâu | Chuyện gì xảy ra |
-| :---: | :--- | :--- |
-| **1** | `main.dart` | Người dùng bấm nút %. Nút gọi hàm đã gắn ở `onPressed`. |
-| **2** | `main.dart` | Hàm `_onPercentPressed()` chạy và gọi `getBatteryPercent()`. |
-| **3** | `main.dart` | `invokeMethod('getPercent')` gửi yêu cầu tên `"getPercent"` qua kênh, rồi đứng chờ. |
-| **4** | `MainActivity.kt` | Android nhận yêu cầu, thấy tên là `"getPercent"`. |
-| **5** | `MainActivity.kt` | Hàm `getBatteryPercent()` hỏi hệ điều hành và nhận về `82`. |
-| **6** | `MainActivity.kt` | `result.success(82)` gửi số `82` về lại Flutter. |
-| **7** | `main.dart` | Flutter hết chờ, nhận `82` và lưu vào biến `_percent` bằng `setState`. |
-| **8** | `main.dart` | `build()` chạy lại: chọn bộ màu xanh và vẽ lại màn hình với số $82\%$. |
+| Bước  | Ở đâu             | Chuyện gì xảy ra                                                                    |
+| :---: | :---------------- | :---------------------------------------------------------------------------------- |
+| **1** | `main.dart`       | Người dùng bấm nút %. Nút gọi hàm đã gắn ở `onPressed`.                             |
+| **2** | `main.dart`       | Hàm `_onPercentPressed()` chạy và gọi `getBatteryPercent()`.                        |
+| **3** | `main.dart`       | `invokeMethod('getPercent')` gửi yêu cầu tên `"getPercent"` qua kênh, rồi đứng chờ. |
+| **4** | `MainActivity.kt` | Android nhận yêu cầu, thấy tên là `"getPercent"`.                                   |
+| **5** | `MainActivity.kt` | Hàm `getBatteryPercent()` hỏi hệ điều hành và nhận về `82`.                         |
+| **6** | `MainActivity.kt` | `result.success(82)` gửi số `82` về lại Flutter.                                    |
+| **7** | `main.dart`       | Flutter hết chờ, nhận `82` và lưu vào biến `_percent` bằng `setState`.              |
+| **8** | `main.dart`       | `build()` chạy lại: chọn bộ màu xanh và vẽ lại màn hình với số $82\%$.              |
 
 ---
 
