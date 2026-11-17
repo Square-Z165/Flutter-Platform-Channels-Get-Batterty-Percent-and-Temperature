@@ -308,3 +308,9 @@ ModeButton(..., palette: palette, ...)
 ---
 
 > **Tóm tắt luồng hoạt động của ứng dụng:** bấm nút $\rightarrow$ Flutter gửi tên yêu cầu qua `MethodChannel` $\rightarrow$ Android lấy số liệu pin và gửi về $\rightarrow$ Flutter lưu lại bằng `setState` $\rightarrow$ `build()` chọn bộ màu phù hợp và vẽ lại màn hình.
+
+---
+## 10. Lưu ý nhỏ: Project này không dùng backgroundIsolated thread
+Lý do không cần:
+- **Việc lấy pin rất nhẹ.** Hỏi `BatteryManager` phần trăm pin hay đọc nhiệt độ chỉ mất chưa tới một phần nghìn giây. Isolate nền chỉ đáng dùng cho việc tính toán nặng kéo dài (xử lý ảnh, đọc file lớn, phân tích JSON rất to), khi đó nếu để trên isolate chính thì màn hình sẽ giật. Và ứng dụng hiện tại chỉ gọi hàm lấy pin khi người dùng nhấn nút chứ không tạo phòng lặp để người dùng cập nhật trạng thái pin liên tục. Nếu về sau có dùng loop để liên tục cập nhật trạng thái thì lúc đó mới cần dùng đến background isolated
+- **Màn hình không bị đứng nhờ `async/await`, không phải nhờ isolate.** Khi gọi `await batteryChannel.invokeMethod(...)`, isolate chính gửi yêu cầu đi rồi quay lại vẽ màn hình tiếp; lúc Android trả lời thì nó mới chạy tiếp phần sau `await`. Đây là chờ mà không chặn, vẫn chỉ trên một isolate.
