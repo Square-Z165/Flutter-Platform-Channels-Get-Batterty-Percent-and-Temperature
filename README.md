@@ -10,7 +10,7 @@ Bài tập E-learning môn Lập trình thiết bị di động.
 * **Nút %**: lấy phần trăm pin của điện thoại.
 * **Nút nhiệt kế**: lấy nhiệt độ của pin.
 
-![[image-1794888245916.png]]
+![Giao diện ứng dụng](ReadmeAssets/image-1794888245916.png)
 
 Sau khi bấm, màn hình hiện con số vừa lấy được và tự đổi màu: **xanh** là bình thường, **vàng** là pin yếu, **đỏ** là pin quá nóng.
 
@@ -19,7 +19,8 @@ Sau khi bấm, màn hình hiện con số vừa lấy được và tự đổi m
 ## 2. Vấn đề giải quyết
 
 Flutter chỉ lo phần giao diện. Tự nó không đọc được thông tin pin của điện thoại. Người biết thông tin đó là hệ điều hành Android.
-![[PlatformChannels.png]]
+
+![Trực quan hóa Platform channels](ReadmeAssets/PlatformChannels.png)
 
 Vì vậy ứng dụng chia làm hai phía, và cần một cách để hai phía nói chuyện với nhau:
 
@@ -51,7 +52,8 @@ Cách để hai phía nói chuyện gọi là **Platform Channel**. Trong code, 
 ## 4. Đường đi của dữ liệu khi bấm nút %
 
 Sơ đồ dưới đây cho thấy 8 bước, theo đúng thứ tự. Ví dụ pin đang ở mức $82\%$.
-![[Flow.png]]
+
+![Luồng mức pin](ReadmeAssets/Flow.png)
 
 ### Chi tiết từng bước
 
