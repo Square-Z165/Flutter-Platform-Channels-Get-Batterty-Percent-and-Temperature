@@ -314,3 +314,7 @@ ModeButton(..., palette: palette, ...)
 Lý do không cần:
 - **Việc lấy pin rất nhẹ.** Hỏi `BatteryManager` phần trăm pin hay đọc nhiệt độ chỉ mất chưa tới một phần nghìn giây. Isolate nền chỉ đáng dùng cho việc tính toán nặng kéo dài (xử lý ảnh, đọc file lớn, phân tích JSON rất to), khi đó nếu để trên isolate chính thì màn hình sẽ giật. Và ứng dụng hiện tại chỉ gọi hàm lấy pin khi người dùng nhấn nút chứ không tạo phòng lặp để người dùng cập nhật trạng thái pin liên tục. Nếu về sau có dùng loop để liên tục cập nhật trạng thái thì lúc đó mới cần dùng đến background isolated
 - **Màn hình không bị đứng nhờ `async/await`, không phải nhờ isolate.** Khi gọi `await batteryChannel.invokeMethod(...)`, isolate chính gửi yêu cầu đi rồi quay lại vẽ màn hình tiếp; lúc Android trả lời thì nó mới chạy tiếp phần sau `await`. Đây là chờ mà không chặn, vẫn chỉ trên một isolate.
+---
+***Nguồn tài liệu tham khảo:***
+https://youtu.be/j0cy_Z6IG_c?si=kueZVIHhYuifnriY
+[Write platform-specific code with platform channels](https://docs.flutter.dev/platform-integration/platform-channels)
