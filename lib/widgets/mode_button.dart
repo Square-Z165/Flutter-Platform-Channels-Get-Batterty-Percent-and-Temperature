@@ -12,8 +12,6 @@ class ModeButton extends StatelessWidget {
     this.onPressed,
   });
 
-  static const double slotWidth = 116;
-
   final IconData icon;
   final String label;
   final BatteryPalette palette;
@@ -24,46 +22,46 @@ class ModeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: slotWidth,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            onPressed: onPressed ?? () {},
-            tooltip: label,
-            isSelected: selected,
-            icon: Icon(icon, weight: 600),
-            iconSize: 28,
-            style: IconButton.styleFrom(
-              fixedSize: const Size.square(64),
-              padding: EdgeInsets.zero,
-              backgroundColor: selected
-                  ? palette.buttonSelectedBackground
-                  : palette.buttonBackground,
-              foregroundColor: selected
-                  ? palette.buttonSelectedForeground
-                  : palette.buttonForeground,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22),
-              ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          onPressed: onPressed ?? () {},
+          tooltip: label,
+          isSelected: selected,
+          icon: Icon(icon, weight: 600),
+          iconSize: 28,
+          style: IconButton.styleFrom(
+            fixedSize: const Size.square(64),
+            padding: EdgeInsets.zero,
+            backgroundColor: selected
+                ? palette.buttonSelectedBackground
+                : palette.buttonBackground,
+            foregroundColor: selected
+                ? palette.buttonSelectedForeground
+                : palette.buttonForeground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
             ),
           ),
-          const SizedBox(height: 12),
-          Text(
+        ),
+        const SizedBox(height: 12),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 98),
+          child: Text(
             label,
             textAlign: TextAlign.center,
-            maxLines: 1,
+            maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 12,
-              height: 1.21,
+              height: 16 / 12,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
               color: selected ? palette.primaryText : palette.secondaryText,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

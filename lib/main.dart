@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import 'stats/stats_screen.dart';
 import 'theme/battery_palette.dart';
 import 'widgets/battery_icon.dart';
 import 'widgets/mode_button.dart';
@@ -90,8 +91,9 @@ class BatteryScreen extends StatefulWidget {
 
 class _BatteryScreenState extends State<BatteryScreen> {
   BatteryInfoMode? _mode;
-  int? _percent;
-  double? _temperature;
+  int?
+  _percent; // dữ liệu kiểu int, ánh xạ sang android sẽ vẫn là Int hoặc Long
+  double? _temperature; // dữ liệu kiểu double ánh sạ sang android sẽ là Double
 
   // Bấm nút % -> hỏi Android -> lưu kết quả -> setState để vẽ lại màn hình.
   Future<void> _onPercentPressed() async {
@@ -110,6 +112,11 @@ class _BatteryScreenState extends State<BatteryScreen> {
       _mode = BatteryInfoMode.temperature;
       _temperature = temperature;
     });
+  }
+
+  void _openStats() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => const StatsScreen()));
   }
 
   @override
@@ -189,24 +196,35 @@ class _BatteryScreenState extends State<BatteryScreen> {
                   caption: caption,
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(21, 4, 21, 21),
+                  padding: const EdgeInsets.fromLTRB(21, 4, 21, 4),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ModeButton(
-                        icon: Symbols.percent,
-                        label: 'Trạng thái pin',
-                        selected: _mode == BatteryInfoMode.level,
-                        palette: palette,
-                        onPressed: _onPercentPressed,
+                      Expanded(
+                        child: ModeButton(
+                          icon: Symbols.percent,
+                          label: 'Trạng thái pin',
+                          selected: _mode == BatteryInfoMode.level,
+                          palette: palette,
+                          onPressed: _onPercentPressed,
+                        ),
                       ),
-                      ModeButton(
-                        icon: Symbols.device_thermostat,
-                        label: 'Nhiệt độ pin',
-                        selected: _mode == BatteryInfoMode.temperature,
-                        palette: palette,
-                        onPressed: _onTemperaturePressed,
+                      Expanded(
+                        child: ModeButton(
+                          icon: Symbols.device_thermostat,
+                          label: 'Nhiệt độ pin',
+                          selected: _mode == BatteryInfoMode.temperature,
+                          palette: palette,
+                          onPressed: _onTemperaturePressed,
+                        ),
+                      ),
+                      Expanded(
+                        child: ModeButton(
+                          icon: Symbols.show_chart,
+                          label: 'Thống kê nhiệt độ 24h qua',
+                          palette: palette,
+                          onPressed: _openStats,
+                        ),
                       ),
                     ],
                   ),
@@ -359,13 +377,14 @@ class _DetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 88,
+      constraints: const BoxConstraints(minHeight: 88),
       margin: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: palette.card,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: _DetailItem(
@@ -374,7 +393,12 @@ class _DetailCard extends StatelessWidget {
               palette: palette,
             ),
           ),
-          Container(width: 1, height: 44, color: palette.cardDivider),
+          Container(
+            width: 1,
+            height: 44,
+            margin: const EdgeInsets.only(top: 22),
+            color: palette.cardDivider,
+          ),
           Expanded(
             child: _DetailItem(
               label: 'Nhiệt độ pin',
@@ -405,7 +429,7 @@ class _DetailItem extends StatelessWidget {
     final hasValue = value != null;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 6, 0),
+      padding: const EdgeInsets.fromLTRB(20, 18, 6, 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -420,7 +444,7 @@ class _DetailItem extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value ?? 'Chưa tiến hành đo',
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: hasValue ? 16 : 14,

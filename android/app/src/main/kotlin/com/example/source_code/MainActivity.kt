@@ -29,6 +29,15 @@ class MainActivity : FlutterActivity() {
                             result.error("UNAVAILABLE", "Không đọc được nhiệt độ pin", null)
                         }
                     }
+                    "startPeriodic" -> {
+                        PeriodicMeasurement.start(applicationContext)
+                        result.success(true)
+                    }
+                    "stopPeriodic" -> {
+                        PeriodicMeasurement.stop(applicationContext)
+                        result.success(false)
+                    }
+                    "isPeriodicEnabled" -> result.success(PeriodicMeasurement.isEnabled(applicationContext))
                     else -> result.notImplemented()
                 }
             }
